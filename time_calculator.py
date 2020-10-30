@@ -1,49 +1,50 @@
-def add_time(start, duration, initweekday = None):
+def add_time(start, duration, init_weekday = None):
     # Extract hours, minutes, AM/PM from start time and duration
-    inittime, initampm = start.split()
-    inithr, initmin = inittime.split(":")
-    addhr, addmin = duration.split(":")
-    # Convert to 24-hours clock format
-    inithr = str(int(inithr) + 12 * int(initampm == "PM"))
+    init_time, init_ampm = start.split()[0], start.split()[1]
+    init_hr = int(init_time.split(":")[0])
+    init_min = int(init_time.split(":")[1])
+    add_hr = int(duration.split(":")[0])
+    add_min = int(duration.split(":")[1])
+    # Convert hours to 24-hours clock format
+    init_hr = init_hr + 12 * int(init_ampm == "PM")
 
     # Add minutes
-    finalmin = int(initmin) + int(addmin)
+    final_min = init_min + add_min
     # Check if this adds up to more than one hour
-    singlehr = int(finalmin / 60)
+    single_hr = int(final_min / 60)
     # Calculate final minutes
-    finalmin = finalmin % 60
-    # Check if we should add '0' in front of minutes
-    zeromin = ""
-    if finalmin < 10:
-        zeromin = "0"
+    final_min = final_min % 60
 
     # Add hours
-    finalhr = int(inithr) + int(addhr) + singlehr
+    final_hr = init_hr + add_hr + single_hr
     # Check how many times we cross the midnight
-    dayslater = int(finalhr / 24)
-    #print(dayslater)
-    # Calculate final hour and AM/PM
-    finalhr = finalhr % 24
-    finalampm = "AM"
-    if finalhr > 11:
-        finalampm = "PM"
-    if finalhr > 12:
-        finalhr -= 12
-    if finalhr == 0:
-        finalhr = 12
+    days_later = int(final_hr / 24)
+    # Calculate final hour
+    final_hr = final_hr % 24
+    # Extract final AM/PM sign
+    final_ampm = "AM"
+    if final_hr > 11:
+        final_ampm = "PM"
+    # Convert hours back to 12-hours clock format
+    if final_hr > 12:
+        final_hr -= 12
+    if final_hr == 0:
+        final_hr = 12
     
     # Construct final string with time
-    finaltime = str(finalhr) + ":" + zeromin + str(finalmin) + " " + finalampm
-    # In case day of the week is provided
-    if initweekday != None:
+    final_time = str(final_hr) + ":" + str(final_min).zfill(2) + " " + final_ampm
+    # In case the day of the week is provided
+    if init_weekday != None:
         weekday = [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ]
-        index = weekday.index(initweekday.lower().capitalize())
-        finaltime = finaltime + ', ' + weekday[(index + dayslater) % 7]
+        # Find index of the current day in a weekday array
+        index = weekday.index(init_weekday.lower().capitalize())
+        # Append final weekday to the time string
+        final_time = final_time + ', ' + weekday[(index + days_later) % 7]
     
-    # Add information about the number of days later
-    if dayslater == 1:
-        finaltime += " (next day)"
-    elif dayslater > 1:
-        finaltime = finaltime + " (" + str(dayslater) + " days later)"
+    # Append information about the number of days later to the string
+    if days_later == 1:
+        final_time += " (next day)"
+    elif days_later > 1:
+        final_time = final_time + " (" + str(days_later) + " days later)"
 
-    return finaltime
+    return final_time
